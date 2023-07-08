@@ -22,6 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,18 +34,31 @@ const formSchema = z.object({
   email: z.string().min(2).max(50),
   subscription: z.string().min(2).max(50),
   language: z.string().min(2).max(50),
-  speed: z.string().min(2).max(50),
+  speed: z.enum(['0.5', '0.75', '1', '1.25', '1.5', '1.75', '2'], {
+    required_error: 'Please select a theme.',
+  }),
+  theme: z.enum(['light', 'dark'], {
+    required_error: 'Please select a theme.',
+  }),
+  pitch: z.array(z.number().min(0).max(100)),
+  volume: z.array(z.number().min(0).max(100)),
 })
+type formSchemaType = z.infer<typeof formSchema>
+
+const defaultValues: Partial<formSchemaType> = {
+  email: 'ai@convo.com',
+  subscription: 'Free',
+  language: 'English',
+  speed: '0.5',
+  pitch: [10],
+  volume: [10],
+}
+
 export default function Setting() {
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<formSchemaType>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: 'ai@convo.com',
-      subscription: 'Free',
-      language: 'English',
-      speed: '1.25',
-    },
+    defaultValues,
   })
 
   // 2. Define a submit handler.
@@ -169,7 +183,7 @@ export default function Setting() {
                           >
                             <FormItem className="flex items-center space-y-0">
                               <FormControl>
-                                <Label className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm">
+                                <Label className=" bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:bg-slate-100 text-slate-900 font-medium text-sm border-primary">
                                   <RadioGroupItem value="0.5" className="sr-only" />
                                   0.5
                                 </Label>
@@ -178,7 +192,7 @@ export default function Setting() {
 
                             <FormItem className="flex items-center space-y-0">
                               <FormControl>
-                                <Label className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm">
+                                <Label className=" bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:bg-slate-100 text-slate-900 font-medium text-sm">
                                   <RadioGroupItem value="0.75" className="sr-only" />
                                   0.75
                                 </Label>
@@ -186,7 +200,7 @@ export default function Setting() {
                             </FormItem>
                             <FormItem className="flex items-center space-y-0">
                               <FormControl>
-                                <Label className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm">
+                                <Label className=" bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:bg-slate-100 text-slate-900 font-medium text-sm">
                                   <RadioGroupItem value="1" className="sr-only" />1
                                 </Label>
                               </FormControl>
@@ -194,8 +208,8 @@ export default function Setting() {
 
                             <FormItem className="flex items-center space-y-0">
                               <FormControl>
-                                <Label className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm">
-                                  <RadioGroupItem value="1.25" />
+                                <Label className=" bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:bg-slate-100 text-slate-900 font-medium text-sm">
+                                  <RadioGroupItem value="1.25" className="sr-only" />
                                   1.25
                                 </Label>
                               </FormControl>
@@ -203,7 +217,7 @@ export default function Setting() {
 
                             <FormItem className="flex items-center space-y-0">
                               <FormControl>
-                                <Label className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm">
+                                <Label className=" bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:bg-slate-100 text-slate-900 font-medium text-sm">
                                   <RadioGroupItem value="1.5" className="sr-only" />
                                   1.5
                                 </Label>
@@ -212,7 +226,7 @@ export default function Setting() {
 
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl>
-                                <Label className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm">
+                                <Label className=" bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:bg-slate-100 text-slate-900 font-medium text-sm">
                                   <RadioGroupItem value="1.75" className="sr-only" />
                                   1.75
                                 </Label>
@@ -221,7 +235,7 @@ export default function Setting() {
 
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl>
-                                <Label className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm">
+                                <Label className=" bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:bg-slate-100 text-slate-900 font-medium text-sm">
                                   <RadioGroupItem value="2" className="sr-only" />2
                                 </Label>
                               </FormControl>
@@ -235,69 +249,6 @@ export default function Setting() {
                 </AccordionContent>
               </AccordionItem>
 
-              {/* <AccordionItem value="item-1">
-                <AccordionTrigger className="mr-[18px]">
-                  <div className="flex items-center flex-1 w-1/3 h-12 ml-4">
-                    <Waves width={16} height={16}></Waves>
-                    <Label className="ml-2">Speed</Label>
-                  </div>
-                  <Input
-                    className="w-2/3 ml-2 text-right border-none focus-visible:outline-none focus-visible:ring-0"
-                    type="email"
-                    placeholder="Enter your email"
-                  />
-                </AccordionTrigger>
-                <AccordionContent>
-                  <RadioGroup
-                    defaultValue="card"
-                    className="grid grid-cols-6 gap-0 px-2 mx-8 my-2 border-2 rounded-md"
-                  >
-                    <Label
-
-                      className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm"
-                    >
-                      <RadioGroupItem value="paypal"  className="sr-only" />
-                      0.5
-                    </Label>
-                    <Label
-
-                      className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm"
-                    >
-                      <RadioGroupItem value="paypal"  className="sr-only" />
-                      0.75
-                    </Label>
-                    <Label
-                      htmlFor="apple"
-                      className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm"
-                    >
-                      <RadioGroupItem value="apple" id="apple" className="sr-only" />
-                      1.0
-                    </Label>
-                    <Label
-                      htmlFor="apple"
-                      className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm"
-                    >
-                      <RadioGroupItem value="apple" id="apple" className="sr-only" />
-                      1.25
-                    </Label>
-                    <Label
-                      htmlFor="apple"
-                      className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm"
-                    >
-                      <RadioGroupItem value="apple" id="apple" className="sr-only" />
-                      1.5
-                    </Label>
-                    <Label
-                      htmlFor="apple"
-                      className="border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary text-slate-900 font-medium text-sm"
-                    >
-                      <RadioGroupItem value="apple" id="apple" className="sr-only" />
-                      2.0
-                    </Label>
-                  </RadioGroup>
-                </AccordionContent>
-              </AccordionItem> */}
-
               <AccordionItem value="item-12">
                 <AccordionTrigger className="mr-[18px]">
                   <div className="flex items-center flex-1 w-1/3 h-12 ml-4">
@@ -307,11 +258,23 @@ export default function Setting() {
                   <Input
                     className="w-2/3 ml-2 text-right border-none focus-visible:outline-none focus-visible:ring-0"
                     disabled
-                    placeholder="Enter your email"
+                    value={form.watch('pitch').toString()}
                   />
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Slider defaultValue={[33]} max={100} step={1} className="px-3 my-2" />
+                  <FormField
+                    control={form.control}
+                    name="pitch"
+                    render={({ field }) => (
+                      <Slider
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        max={100}
+                        step={1}
+                        className="px-3 my-2"
+                      />
+                    )}
+                  ></FormField>
                 </AccordionContent>
               </AccordionItem>
 
@@ -324,11 +287,23 @@ export default function Setting() {
                   <Input
                     className="w-2/3 ml-2 text-right border-none focus-visible:outline-none focus-visible:ring-0"
                     disabled
-                    placeholder="Enter your email"
+                    value={form.watch('volume').toString()}
                   />
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Slider defaultValue={[33]} max={100} step={1} className="px-4 my-2" />
+                  <FormField
+                    control={form.control}
+                    name="volume"
+                    render={({ field }) => (
+                      <Slider
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        max={100}
+                        step={1}
+                        className="px-3 my-2"
+                      />
+                    )}
+                  ></FormField>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

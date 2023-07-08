@@ -1,11 +1,16 @@
+'use client'
+
 import { zodResolver } from '@hookform/resolvers/zod'
+
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,18 +19,30 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { toast } from '@/components/ui/use-toast'
 
-const FormSchema = z.object({
-  type: z.enum(['all', 'mentions', 'none'], {
-    required_error: 'You need to select a notification type.',
+const appearanceFormSchema = z.object({
+  theme: z.enum(['light', 'dark'], {
+    required_error: 'Please select a theme.',
+  }),
+  font: z.enum(['inter', 'manrope', 'system'], {
+    invalid_type_error: 'Select a font',
+    required_error: 'Please select a font.',
   }),
 })
 
-export function RadioGroupForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
+
+// This can come from your database or API.
+const defaultValues: Partial<AppearanceFormValues> = {
+  theme: 'light',
+}
+
+export function AppearanceForm() {
+  const form = useForm<AppearanceFormValues>({
+    resolver: zodResolver(appearanceFormSchema),
+    defaultValues,
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(data: AppearanceFormValues) {
     toast({
       title: 'You submitted the following values:',
       description: (
@@ -38,45 +55,74 @@ export function RadioGroupForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="type"
+          name="theme"
           render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Notify me about...</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="all" />
-                    </FormControl>
-                    <FormLabel className="font-normal">All new messages</FormLabel>
-                  </FormItem>
-
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="mentions" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Direct messages and mentions</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="none" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Nothing</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
+            <FormItem className="space-y-1">
+              <FormLabel>Theme</FormLabel>
+              <FormDescription>Select the theme for the dashboard.</FormDescription>
               <FormMessage />
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="grid max-w-md grid-cols-2 gap-8 pt-2"
+              >
+                <FormItem>
+                  <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
+                    <FormControl>
+                      <RadioGroupItem value="light" className="sr-only" />
+                    </FormControl>
+                    <div className="items-center p-1 border-2 rounded-md border-muted hover:border-accent">
+                      <div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
+                        <div className="p-2 space-y-2 bg-white rounded-md shadow-sm">
+                          <div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
+                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                        </div>
+                        <div className="flex items-center p-2 space-x-2 bg-white rounded-md shadow-sm">
+                          <div className="h-4 w-4 rounded-full bg-[#ecedef]" />
+                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                        </div>
+                        <div className="flex items-center p-2 space-x-2 bg-white rounded-md shadow-sm">
+                          <div className="h-4 w-4 rounded-full bg-[#ecedef]" />
+                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                        </div>
+                      </div>
+                    </div>
+                    <span className="block w-full p-2 font-normal text-center">Light</span>
+                  </FormLabel>
+                </FormItem>
+                <FormItem>
+                  <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
+                    <FormControl>
+                      <RadioGroupItem value="dark" className="sr-only" />
+                    </FormControl>
+                    <div className="items-center p-1 border-2 rounded-md border-muted bg-popover hover:bg-accent hover:text-accent-foreground">
+                      <div className="p-2 space-y-2 rounded-sm bg-slate-950">
+                        <div className="p-2 space-y-2 rounded-md shadow-sm bg-slate-800">
+                          <div className="h-2 w-[80px] rounded-lg bg-slate-400" />
+                          <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+                        </div>
+                        <div className="flex items-center p-2 space-x-2 rounded-md shadow-sm bg-slate-800">
+                          <div className="w-4 h-4 rounded-full bg-slate-400" />
+                          <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+                        </div>
+                        <div className="flex items-center p-2 space-x-2 rounded-md shadow-sm bg-slate-800">
+                          <div className="w-4 h-4 rounded-full bg-slate-400" />
+                          <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+                    <span className="block w-full p-2 font-normal text-center">Dark</span>
+                  </FormLabel>
+                </FormItem>
+              </RadioGroup>
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+
+        <Button type="submit">Update preferences</Button>
       </form>
     </Form>
   )
