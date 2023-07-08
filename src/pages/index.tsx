@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <main className={`${inter.className}`}>
+    <div className={`${inter.className} relative flex flex-col min-h-screen overscroll-none`}>
       <Header></Header>
       <Link href={'/conversation'}>
         <Card className="w-[276px] m-auto text-center bg-blue-50 mt-[124px] h-[226px]">
@@ -44,6 +44,6 @@ export default function Home() {
           Access to history and summaries of conversations.
         </CardContent>
       </Card>
-    </main>
+    </div>
   )
 }
