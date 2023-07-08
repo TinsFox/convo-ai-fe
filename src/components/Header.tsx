@@ -41,7 +41,7 @@ export function DropdownSettingMenu({ className }: DropdownSettingMenuProps) {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href={'/setting'}>
+          <Link href={'/user/setting'}>
             <DropdownMenuItem>
               <Settings className="w-4 h-4 mr-2" />
               <span>Settings</span>
