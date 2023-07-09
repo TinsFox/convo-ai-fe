@@ -64,8 +64,8 @@ export const useChatStore = create<ChatStore>()(
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log('AI返回结果', data)
-            // set((state) => ({ messages: [...state.messages, message], fetching: false }))
+            console.log('AI返回结果', data.response)
+            set((state) => ({ messages: [...state.messages, data.response], fetching: false }))
           })
           .catch((error) => console.error(error))
       },
