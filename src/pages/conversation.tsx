@@ -1,90 +1,111 @@
 import { Header } from '@/components/Header'
-import clsx from 'clsx'
+
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import dynamic from 'next/dynamic'
-import { motion } from 'framer-motion'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+const Dialogue = dynamic(async () => (await import('@/components/Dialogue')).Dialogue, {
+  ssr: false,
+})
 
 const ChatAction = dynamic(async () => (await import('@/components/ChatAction')).ChatAction, {
   loading: () => <div>loading...</div>,
+  ssr: false,
 })
+interface Message {
+  role: 'Convo AI' | 'user'
+  content: string
+  value: 'Human' | 'Assistant'
+}
 
-const mockData: IDialogueProps[] = [
-  {
-    role: 'Convo AI',
-    content: 'Hi! How can we assist you today?',
-  },
-  {
-    role: 'user',
-    content: 'I have a phone call I need assistance with',
-  },
-  {
-    role: 'Convo AI',
-    content:
-      "Sure, I'm here to help! Please provide me with the necessary details about the call, such as the contact's name, purpose of the call, and any specific requirements.",
-  },
-  {
-    role: 'user',
-    content:
-      'I need to follow up with a client at work for updates. I emailed him three days ago and am still waiting for response. I need the files by the end of this week.',
-  },
-  {
-    role: 'Convo AI',
-    content:
-      "Absolutely! Here's a dialogue script for your phone call:Phone Call Dialogue:You: Hey [Client's Name], how's it going? I wanted to touch base with you about the email I sent a few days ago. Have you had a chance to check it out and see if there are any updates or info you need from my end?Client: Hey [Your Name]! Sorry for the delay. I've been caught up with other projects. I'll try my best to get you the files by the end of this week, but it might be tight. Is there any chance we can extend the deadline by a day or two?You: No problem at all, [Client's Name]! I totally understand how things can get busy. Thanks for the update. While the original deadline is tight, I can see if we can manage a slight extension. Let me check with the team and see if it's feasible. I'll get back to you shortly. In the meantime, if there's any way you can expedite the process, that would be fantastic. Just keep me posted on your progress. Thanks for your understanding!Remember to adjust the dialogue to match your personal communication style and relationship with the client. This format allows for a more conversational interaction during your phone call.",
-  },
-]
+interface ChatStore {
+  messages: Message[]
+  addMessage: (message: Message) => void
+  fetchMessage: () => void
+  fetching: boolean
+}
+
+export const useChatStore = create<ChatStore>()(
+  persist(
+    (set, get) => ({
+      messages: [
+        {
+          role: 'Convo AI',
+          content: 'Welcome to the chat!',
+          value: 'Assistant',
+        },
+      ] as Message[],
+      fetching: false,
+      addMessage: (message) => {
+        set((state) => ({ messages: [...state.messages, message], fetching: true }))
+        get().fetchMessage()
+      },
+      fetchMessage: async () => {
+        const contextArray = get().messages
+        let result = ''
+
+        contextArray.forEach((item) => {
+          if (item.role === 'Convo AI') {
+            result += `Assistant: ${item.content}\\n`
+          } else if (item.role === 'user') {
+            result += `Human: ${item.content}\\n`
+          }
+        })
+        console.log('上下文', contextArray)
+        console.log('参数', result)
+
+        fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            human_msg: result,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('AI返回结果', data)
+            // set((state) => ({ messages: [...state.messages, message], fetching: false }))
+          })
+          .catch((error) => console.error(error))
+      },
+    }),
+    {
+      name: 'convo-ai',
+      getStorage: () => localStorage,
+    }
+  )
+)
 
 export default function Conversation() {
+  const messages = useChatStore((state) => state.messages)
+  const fetching = useChatStore((state) => state.fetching)
   return (
-    <>
-      <div className="relative flex flex-col min-h-screen overscroll-none">
-        <Header></Header>
-        <div className="flex-grow">
+    <div className="relative flex flex-col min-h-screen overscroll-none">
+      <Header></Header>
+      <div className="flex-grow">
+        {messages.length > 0 && (
           <div className="p-4">
-            {mockData.map((item, index) => {
+            {messages.map((item, index) => {
               return <Dialogue key={index} role={item.role} content={item.content}></Dialogue>
             })}
           </div>
-          <div className="flex flex-col items-center mt-6 text-center md:flex-row md:justify-evenly md:flex-wrap">
-            <Button variant="outline">Regenerate response</Button>
-            <Button variant="outline" className="mt-4 md:mt-0">
-              I’m ready! Turn on Convo Assist
-            </Button>
-          </div>
+        )}
+        <div className="flex flex-col items-center mt-6 text-center md:flex-row md:justify-evenly md:flex-wrap">
+          <Button variant="outline">Regenerate response</Button>
+          <Button variant="outline" className="mt-4 md:mt-0">
+            I’m ready! Turn on Convo Assist
+          </Button>
         </div>
-        <ChatAction></ChatAction>
+        {/* {fetching && (
+          // 判断数字是否奇数
+
+        )} */}
       </div>
-    </>
-  )
-}
-
-interface IDialogueProps {
-  role: 'Convo AI' | 'user'
-  content: React.ReactNode
-}
-
-function Dialogue({ role: user, content }: IDialogueProps) {
-  const itemVariants = {
-    open: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring', stiffness: 300, damping: 24 },
-    },
-    closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
-  }
-
-  return (
-    <motion.div className="mt-4" variants={itemVariants} initial="closed" animate="open">
-      <div className="text-sm font-medium text-slate-900">{user}</div>
-      <div
-        className={clsx('p-3 rounded-md text-left text-sm', {
-          'bg-blue-500 text-slate-50': user === 'user',
-          'bg-slate-100 text-slate-500': user === 'Convo AI',
-        })}
-      >
-        {content}
-      </div>
-    </motion.div>
+      <ChatAction></ChatAction>
+    </div>
   )
 }

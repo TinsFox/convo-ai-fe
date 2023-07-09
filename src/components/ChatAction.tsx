@@ -4,8 +4,13 @@ import React, { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import RecordRTC from 'recordrtc'
 import { motion } from 'framer-motion'
+import { useChatStore } from '@/pages/conversation'
+import { set } from 'date-fns'
 
 export function ChatAction() {
+  const addMessage = useChatStore((state) => state.addMessage)
+  const [inputText, setInputText] = useState('')
+
   const [recording, setRecording] = useState(false)
   const [audioURL, setAudioURL] = useState('')
   const recordRTCRef = useRef<RecordRTC | null>(null)
@@ -63,11 +68,24 @@ export function ChatAction() {
       stopRecording()
     }
   }
+  const handleSend = () => {
+    if (inputText === '') return
+    addMessage({
+      role: 'user',
+      content: inputText,
+      value: 'Human',
+    })
+    setInputText('')
+  }
   return (
     <div className="sticky bottom-0 left-0 z-10">
       <div className="flex items-center flex-none w-full gap-2 p-4 space-x-2 bg-white ">
         <div className="relative w-full">
-          <Input placeholder="Message"></Input>
+          <Input
+            placeholder="Message"
+            onChange={(e) => setInputText(e.target.value)}
+            value={inputText}
+          ></Input>
           <Button
             onClick={handleButtonClick}
             size="icon"
@@ -80,7 +98,10 @@ export function ChatAction() {
             )}
           </Button>
         </div>
-        <SendIcon className="text-indigo-600" width={24} height={24}></SendIcon>
+        <Button disabled={inputText === ''} onClick={handleSend} variant={'outline'}>
+          <SendIcon className="text-indigo-600" width={24} height={24}></SendIcon>
+        </Button>
+
         {audioURL && (
           <audio
             controls
