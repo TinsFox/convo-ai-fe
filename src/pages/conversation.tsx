@@ -56,7 +56,7 @@ export const useChatStore = create<ChatStore>()(
         console.log('上下文', contextArray)
         console.log('参数', result)
 
-        fetch(`/api/chat?human_msg${result}`, {
+        fetch(`/api/chat?human_msg=${encodeURIComponent(result)}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
