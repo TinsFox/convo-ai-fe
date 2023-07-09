@@ -42,7 +42,7 @@ export function ChatAction() {
     }
   }
   return (
-    <div className="sticky bottom-0 left-0 z-10 flex items-center flex-none w-full max-w-sm gap-2 p-4 space-x-2 bg-white">
+    <div className="sticky bottom-0 left-0 z-10 flex items-center flex-none w-full gap-2 p-4 space-x-2 bg-white">
       <div className="relative w-full">
         <Input placeholder="Message"></Input>
         <Button
