@@ -65,7 +65,12 @@ export const useChatStore = create<ChatStore>()(
           .then((response) => response.json())
           .then((data) => {
             console.log('AI返回结果', data.response)
-            set((state) => ({ messages: [...state.messages, data.response], fetching: false }))
+            get().addMessage({
+              role: 'Convo AI',
+              content: data.response,
+              value: 'Assistant',
+            })
+            set((state) => ({ fetching: false }))
           })
           .catch((error) => console.error(error))
       },
