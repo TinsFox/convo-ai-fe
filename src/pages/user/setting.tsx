@@ -59,6 +59,7 @@ export default function Setting() {
   const form = useForm<formSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues,
+    mode: 'onChange',
   })
 
   // 2. Define a submit handler.

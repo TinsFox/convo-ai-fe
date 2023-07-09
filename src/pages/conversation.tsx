@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import dynamic from 'next/dynamic'
-import { motion, Variants } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const ChatAction = dynamic(async () => (await import('@/components/ChatAction')).ChatAction, {
   loading: () => <div>loading...</div>,
@@ -46,9 +46,9 @@ export default function Conversation() {
               return <Dialogue key={index} role={item.role} content={item.content}></Dialogue>
             })}
           </div>
-          <div className="mt-6 text-center">
+          <div className="flex flex-col items-center mt-6 text-center md:flex-row md:justify-evenly md:flex-wrap">
             <Button variant="outline">Regenerate response</Button>
-            <Button variant="outline" className="mt-2">
+            <Button variant="outline" className="mt-4 md:mt-0">
               I’m ready! Turn on Convo Assist
             </Button>
           </div>
@@ -77,7 +77,6 @@ function Dialogue({ role: user, content }: IDialogueProps) {
   return (
     <motion.div className="mt-4" variants={itemVariants} initial="closed" animate="open">
       <div className="text-sm font-medium text-slate-900">{user}</div>
-
       <div
         className={clsx('p-3 rounded-md text-left text-sm', {
           'bg-blue-500 text-slate-50': user === 'user',
