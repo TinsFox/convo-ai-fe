@@ -49,13 +49,6 @@ export function DropdownSettingMenu({ className }: DropdownSettingMenuProps) {
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <Link href={'/support'}>
-          <DropdownMenuItem>
-            <LifeBuoy className="w-4 h-4 mr-2" />
-            <span>Support</span>
-          </DropdownMenuItem>
-        </Link>
-        <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={logout}>
           <LogOut className="w-4 h-4 mr-2" />

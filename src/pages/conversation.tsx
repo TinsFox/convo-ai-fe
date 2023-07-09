@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import dynamic from 'next/dynamic'
+import { motion, Variants } from 'framer-motion'
 
 const ChatAction = dynamic(async () => (await import('@/components/ChatAction')).ChatAction, {
   loading: () => <div>loading...</div>,
@@ -64,9 +65,19 @@ interface IDialogueProps {
 }
 
 function Dialogue({ role: user, content }: IDialogueProps) {
+  const itemVariants = {
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: { type: 'spring', stiffness: 300, damping: 24 },
+    },
+    closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
+  }
+
   return (
-    <div className="mt-4">
+    <motion.div className="mt-4" variants={itemVariants} initial="closed" animate="open">
       <div className="text-sm font-medium text-slate-900">{user}</div>
+
       <div
         className={clsx('p-3 rounded-md text-left text-sm', {
           'bg-blue-500 text-slate-50': user === 'user',
@@ -75,6 +86,6 @@ function Dialogue({ role: user, content }: IDialogueProps) {
       >
         {content}
       </div>
-    </div>
+    </motion.div>
   )
 }
