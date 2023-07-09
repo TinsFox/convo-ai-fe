@@ -56,14 +56,11 @@ export const useChatStore = create<ChatStore>()(
         console.log('上下文', contextArray)
         console.log('参数', result)
 
-        fetch('/api/chat', {
+        fetch(`/api/chat?human_msg${result}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            human_msg: result,
-          }),
         })
           .then((response) => response.json())
           .then((data) => {
