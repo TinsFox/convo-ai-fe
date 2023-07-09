@@ -50,7 +50,7 @@ const ChatWindow = () => {
   const getRandomResponse = () => {
     const responses = ['Hello!', 'How are you?', 'Nice to meet you!']
     const randomIndex = Math.floor(Math.random() * responses.length)
-    return { sender: 'bot', content: responses[randomIndex] }
+    return { role: 'bot', content: responses[randomIndex] }
   }
 
   useEffect(() => {

@@ -1,6 +1,3 @@
-import { Inter } from 'next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { CalendarClock, PlusCircle } from 'lucide-react'
 import { Header } from '@/components/Header'
@@ -8,7 +5,7 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className={`${inter.className} relative flex flex-col min-h-screen overscroll-none`}>
+    <div className={`relative flex flex-col min-h-screen overscroll-none`}>
       <Header></Header>
       <Link href={'/conversation'}>
         <Card className="w-[276px] m-auto text-center bg-blue-50 mt-[124px] h-[226px]">
