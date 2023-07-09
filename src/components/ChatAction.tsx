@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import RecordRTC from 'recordrtc'
 import { motion } from 'framer-motion'
 import { useChatStore } from '@/pages/conversation'
-import { set } from 'date-fns'
 
 export function ChatAction() {
   const addMessage = useChatStore((state) => state.addMessage)
@@ -40,7 +39,7 @@ export function ChatAction() {
 
         formData.append('file', audioBlob)
 
-        fetch('/railway/gcp_speech_to_text', {
+        fetch('/api/gcp_speech_to_text', {
           method: 'POST',
           body: formData,
         })

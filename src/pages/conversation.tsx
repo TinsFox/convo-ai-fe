@@ -55,7 +55,6 @@ export const useChatStore = create<ChatStore>()(
         })
         console.log('上下文', contextArray)
         console.log('参数', result)
-
         fetch(`/api/chat?human_msg=${encodeURIComponent(result)}`, {
           method: 'POST',
           headers: {
@@ -90,6 +89,7 @@ export const useChatStore = create<ChatStore>()(
 export default function Conversation() {
   const messages = useChatStore((state) => state.messages)
   const fetching = useChatStore((state) => state.fetching)
+  const fetchMessage = useChatStore((state) => state.fetchMessage)
   return (
     <div className="relative flex flex-col min-h-screen overscroll-none">
       <Header></Header>
@@ -102,7 +102,9 @@ export default function Conversation() {
           </div>
         )}
         <div className="flex flex-col items-center mt-6 text-center md:flex-row md:justify-evenly md:flex-wrap">
-          <Button variant="outline">Regenerate response</Button>
+          <Button variant="outline" onClick={fetchMessage}>
+            Regenerate response
+          </Button>
           <Button variant="outline" className="mt-4 md:mt-0">
             I’m ready! Turn on Convo Assist
           </Button>
