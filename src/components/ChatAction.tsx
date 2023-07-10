@@ -118,7 +118,7 @@ export function ChatAction() {
           })
           .then((data) => {
             console.log('gcp_speech_to_text', data.response)
-            setInputText(data.response)
+            setInputText(data.response.transcript)
           })
           .catch((error) => {
             console.error('There was a problem with the fetch operation:', error)
