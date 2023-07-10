@@ -21,7 +21,7 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
     closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
   }
   const toVoice = () => {
-    fetch(`/api/tts?text=${encodeURIComponent(content as string)}`, {
+    fetch(`/api/tts_path?text=${encodeURIComponent(content as string)}&absolute_path=true`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
