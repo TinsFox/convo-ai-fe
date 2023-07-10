@@ -9,7 +9,7 @@ import Recorder from 'recorder-core'
 import 'recorder-core/src/engine/wav'
 import 'recorder-core/src/engine/mp3'
 import 'recorder-core/src/engine/mp3-engine'
-
+import { Textarea } from '@/components/ui/textarea'
 let rec: any = null
 /** 调用open打开录音请求好录音权限* */
 const recOpen = function (success: any) {
@@ -154,11 +154,12 @@ export function ChatAction() {
     <div className="sticky bottom-0 left-0 z-10">
       <div className="flex items-center flex-none w-full gap-2 p-4 space-x-2 bg-white ">
         <div className="relative w-full">
-          <Input
+          <Textarea
             placeholder="Message"
             onChange={(e) => setInputText(e.target.value)}
             value={inputText}
-          ></Input>
+            className="w-5/6"
+          ></Textarea>
           <Button
             onClick={handleButtonClick}
             size="icon"
