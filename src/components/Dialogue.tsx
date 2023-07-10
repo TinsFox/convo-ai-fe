@@ -40,7 +40,7 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
     <motion.div className="mt-4" variants={itemVariants} initial="closed" animate="open">
       <div className="flex items-center gap-2 text-sm font-medium text-slate-900" onClick={toVoice}>
         {user}
-        <Volume1 className="inline-block"></Volume1>
+        <Volume1 className="inline-block" width={15} height={15}></Volume1>
       </div>
       <div
         className={clsx('p-3 rounded-md text-left text-sm', {

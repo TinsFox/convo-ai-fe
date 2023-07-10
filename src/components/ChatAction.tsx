@@ -18,7 +18,7 @@ export function ChatAction() {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
-        const recordRTC = new RecordRTC(stream, { type: 'audio' })
+        const recordRTC = new RecordRTC(stream, { type: 'audio', mimeType: 'audio/wav' })
         recordRTC.startRecording()
         recordRTCRef.current = recordRTC // 保存 recordRTC 实例到 ref
         setRecording(true)
@@ -50,12 +50,16 @@ export function ChatAction() {
             return response.json()
           })
           .then((data) => {
-            console.log(data)
+            console.log('gcp_speech_to_text', data.response)
+            setInputText(data.response)
           })
           .catch((error) => {
             console.error('There was a problem with the fetch operation:', error)
           })
+        // TODO clsoe
+        recordRTCRef.current
       })
+      recordRTCRef.current.stopRecording()
       setRecording(false)
     }
   }
