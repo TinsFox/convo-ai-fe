@@ -152,18 +152,21 @@ export function ChatAction() {
   }
   return (
     <div className="sticky bottom-0 left-0 z-10">
-      <div className="flex items-center flex-none w-full gap-2 p-4 space-x-2 bg-white ">
+      <div className="flex items-center flex-none w-full gap-2 p-4 bg-white ">
         <div className="relative w-full">
           <Textarea
             placeholder="Message"
             onChange={(e) => setInputText(e.target.value)}
             value={inputText}
-            className="w-5/6"
+            // className="w-5/6"
           ></Textarea>
+        </div>
+        <div className="flex">
           <Button
             onClick={handleButtonClick}
-            size="icon"
-            className="absolute translate-y-1/2 bg-transparent border-none right-2 bottom-1/2 text-slate-400"
+            // size="icon"
+            variant={'outline'}
+            className="bg-transparent border-none text-slate-400"
           >
             {recording ? (
               <StopCircle width={24} height={24}></StopCircle>
@@ -171,10 +174,15 @@ export function ChatAction() {
               <Mic width={24} height={24}></Mic>
             )}
           </Button>
+          <Button
+            disabled={inputText === ''}
+            onClick={handleSend}
+            variant={'outline'}
+            className="p-2"
+          >
+            <SendIcon className="text-indigo-600" width={24} height={24}></SendIcon>
+          </Button>
         </div>
-        <Button disabled={inputText === ''} onClick={handleSend} variant={'outline'}>
-          <SendIcon className="text-indigo-600" width={24} height={24}></SendIcon>
-        </Button>
       </div>
       {recording && <RecordIng></RecordIng>}
     </div>

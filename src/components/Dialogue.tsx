@@ -1,13 +1,16 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { Volume1 } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import React, { useRef } from 'react'
 
 interface IDialogueProps {
   role: 'Convo AI' | 'user'
-  content: React.ReactNode
+  content: string
 }
-
+const Markdown = dynamic(async () => (await import('@/components/markdown')).Markdown, {
+  loading: () => <div>...</div>,
+})
 export function Dialogue({ role: user, content }: IDialogueProps) {
   let audioRef: HTMLAudioElement
   const itemVariants = {
@@ -25,7 +28,7 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
       audioRef.load()
       return
     }
-    fetch(`/api/tts_path?text=${encodeURIComponent(content as string)}&absolute_path=true`, {
+    fetch(`/api/tts_path?text=${encodeURIComponent(content)}&absolute_path=true`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -54,6 +57,18 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
         })}
       >
         {content}
+        <Markdown
+          content={content}
+          // loading={(message.preview || message.content.length === 0) && !isUser}
+          // onContextMenu={(e) => onRightClick(e, message)}
+          // onDoubleClickCapture={() => {
+          //   if (!isMobileScreen) return
+          //   setUserInput(message.content)
+          // }}
+          // fontSize={fontSize}
+          // parentRef={scrollRef}
+          // defaultShow={i >= messages.length - 10}
+        />
       </div>
     </motion.div>
   )
