@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import dynamic from 'next/dynamic'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { Loader2 } from 'lucide-react'
 
 const Dialogue = dynamic(async () => (await import('@/components/Dialogue')).Dialogue, {
   ssr: false,
@@ -39,10 +40,11 @@ export const useChatStore = create<ChatStore>()(
       ] as Message[],
       fetching: false,
       addMessage: (message) => {
-        set((state) => ({ messages: [...state.messages, message], fetching: true }))
+        set((state) => ({ ...state, messages: [...state.messages, message] }))
         get().fetchMessage()
       },
       fetchMessage: async () => {
+        set((state) => ({ ...state, fetching: true }))
         const contextArray = get().messages
         let result = ''
         contextArray.forEach((item) => {
@@ -108,6 +110,9 @@ export default function Conversation() {
   const messages = useChatStore((state) => state.messages)
   const fetchMessage = useChatStore((state) => state.fetchMessage)
   const addMessage = useChatStore((state) => state.addMessage)
+  const fetching = useChatStore((state) => state.fetching)
+  console.log('fetching', fetching)
+
   return (
     <div className="relative flex flex-col min-h-screen overscroll-none">
       <Header></Header>
@@ -119,25 +124,34 @@ export default function Conversation() {
             })}
           </div>
         )}
-        <div className="flex flex-col items-center mt-6 text-center md:flex-row md:justify-evenly md:flex-wrap">
-          <Button variant="outline" onClick={fetchMessage}>
-            Regenerate response
-          </Button>
-          <Button
-            variant="outline"
-            className="mt-4 md:mt-0"
-            onClick={() => {
-              addMessage({
-                role: 'user',
-                content:
-                  "summarize the above conversation and show me the bullet points, results are returned in Markdown format.Just tell me the result, don't reply to others",
-                value: 'Human',
-              })
-            }}
-          >
-            Summary
-          </Button>
-        </div>
+        {fetching ? (
+          <div className="flex flex-col items-center mt-6 text-center md:flex-row md:justify-evenly md:flex-wrap">
+            <div className="flex items-center">
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Please wait
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center mt-6 text-center md:flex-row md:justify-evenly md:flex-wrap">
+            <Button variant="outline" onClick={fetchMessage}>
+              Regenerate response
+            </Button>
+            <Button
+              variant="outline"
+              className="mt-4 md:mt-0"
+              onClick={() => {
+                addMessage({
+                  role: 'user',
+                  content:
+                    "summarize the above conversation and show me the bullet points, results are returned in Markdown format.Just tell me the result, don't reply to others",
+                  value: 'Human',
+                })
+              }}
+            >
+              Summary
+            </Button>
+          </div>
+        )}
       </div>
       <ChatAction></ChatAction>
     </div>
