@@ -5,7 +5,38 @@ import { Button } from '@/components/ui/button'
 import RecordRTC from 'recordrtc'
 import { motion } from 'framer-motion'
 import { useChatStore } from '@/pages/conversation'
+import Recorder from 'recorder-core'
+import 'recorder-core/src/engine/wav'
+import 'recorder-core/src/engine/mp3'
+import 'recorder-core/src/engine/mp3-engine'
 
+let rec: any = null
+/** 调用open打开录音请求好录音权限* */
+const recOpen = function (success: any) {
+  // 一般在显示出录音按钮或相关的录音界面时进行此方法调用，后面用户点击开始录音时就能畅通无阻了
+  rec = Recorder({
+    // 本配置参数请参考下面的文档，有详细介绍
+    type: 'wav',
+    sampleRate: 16000,
+    bitRate: 16, // mp3格式，指定采样率hz、比特率kbps，其他参数使用默认配置；注意：是数字的参数必须提供数字，不要用字符串；需要使用的type类型，需提前把格式支持文件加载进来，比如使用wav格式需要提前加载wav.js编码引擎
+  })
+
+  rec.open(
+    function () {
+      success && success()
+    },
+    function (msg: string, isUserNotAllow: any) {
+      // 用户拒绝未授权或不支持
+      console.log(`${isUserNotAllow ? 'UserNotAllow，' : ''}无法录音:${msg}`)
+    }
+  )
+}
+
+/** 开始录音* */
+function recStart() {
+  // 打开了录音后才能进行start、stop调用
+  rec.start()
+}
 export function ChatAction() {
   const addMessage = useChatStore((state) => state.addMessage)
   const [inputText, setInputText] = useState('')
@@ -33,6 +64,7 @@ export function ChatAction() {
       recordRTCRef.current.stopRecording(() => {
         const audioBlob = recordRTCRef.current!.getBlob()
         const url = URL.createObjectURL(audioBlob)
+        console.log('录音停止')
         setAudioURL(url)
 
         const formData = new FormData()
@@ -63,12 +95,50 @@ export function ChatAction() {
       setRecording(false)
     }
   }
+  function recStop() {
+    rec.stop(
+      function (blob: any) {
+        setRecording(false)
+        rec.close() // 释放录音资源，当然可以不释放，后面可以连续调用start；但不释放时系统或浏览器会一直提示在录音，最佳操作是录完就close掉
+        rec = null
 
+        const formData = new FormData()
+
+        formData.append('file', blob)
+
+        fetch('/api/gcp_speech_to_text', {
+          method: 'POST',
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok')
+            }
+            return response.json()
+          })
+          .then((data) => {
+            console.log('gcp_speech_to_text', data.response)
+            setInputText(data.response)
+          })
+          .catch((error) => {
+            console.error('There was a problem with the fetch operation:', error)
+          })
+      },
+      function (msg: string) {
+        console.log(`录音失败:${msg}`)
+        rec.close() // 可以通过stop方法的第3个参数来自动调用close
+        rec = null
+      }
+    )
+  }
   const handleButtonClick = () => {
     if (!recording) {
-      startRecording()
+      recOpen(function () {
+        recStart()
+        setRecording(true)
+      })
     } else {
-      stopRecording()
+      recStop()
     }
   }
   const handleSend = () => {
@@ -104,16 +174,6 @@ export function ChatAction() {
         <Button disabled={inputText === ''} onClick={handleSend} variant={'outline'}>
           <SendIcon className="text-indigo-600" width={24} height={24}></SendIcon>
         </Button>
-
-        {audioURL && (
-          <audio
-            controls
-            src={audioURL}
-            style={{
-              display: 'none',
-            }}
-          />
-        )}
       </div>
       {recording && <RecordIng></RecordIng>}
     </div>

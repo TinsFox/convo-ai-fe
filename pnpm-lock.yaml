@@ -158,6 +158,9 @@ dependencies:
   react-hook-form:
     specifier: 7.44.2
     version: 7.44.2(react@18.2.0)
+  recorder-core:
+    specifier: ^1.2.23070100
+    version: 1.2.23070100
   recordrtc:
     specifier: ^5.6.2
     version: 5.6.2
@@ -4486,6 +4489,10 @@ packages:
     engines: {node: '>=8.10.0'}
     dependencies:
       picomatch: 2.3.1
+    dev: false
+
+  /recorder-core@1.2.23070100:
+    resolution: {integrity: sha512-R9S2taKj8Q2aePJdoLzSD784WW++VIpWhOgYw+IiM03SdyOVZV2osYgGj/l6yD7BJ8uwo4bl75d3Pg+WMp3Z1A==}
     dev: false
 
   /recordrtc@5.6.2:
