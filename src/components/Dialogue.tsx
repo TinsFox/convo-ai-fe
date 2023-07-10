@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { Volume1 } from 'lucide-react'
-import React from 'react'
-import { useState } from 'react'
+import React, { useRef } from 'react'
 
 interface IDialogueProps {
   role: 'Convo AI' | 'user'
@@ -10,6 +9,7 @@ interface IDialogueProps {
 }
 
 export function Dialogue({ role: user, content }: IDialogueProps) {
+  let audioRef: HTMLAudioElement
   const itemVariants = {
     open: {
       opacity: 1,
@@ -18,7 +18,13 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
     },
     closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
   }
+
   const toVoice = () => {
+    if (audioRef?.currentTime > 0) {
+      audioRef.pause()
+      audioRef.load()
+      return
+    }
     fetch(`/api/tts_path?text=${encodeURIComponent(content as string)}&absolute_path=true`, {
       method: 'GET',
       headers: {
@@ -29,6 +35,7 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
       .then((data) => {
         console.log('AI返回结果', data)
         const audio = new Audio(data)
+        audioRef = audio
         audio.play()
       })
       .catch((error) => console.error(error))

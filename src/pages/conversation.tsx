@@ -63,6 +63,25 @@ export const useChatStore = create<ChatStore>()(
           .then((response) => response.json())
           .then((data) => {
             console.log('AI返回结果', data.response)
+            fetch(
+              `/api/tts_path?text=${encodeURIComponent(
+                data.response as string
+              )}&absolute_path=true`,
+              {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                console.log('AI返回结果', data)
+                const audio = new Audio(data)
+                audio.play()
+              })
+              .catch((error) => console.error(error))
+
             set((state) => ({
               messages: [
                 ...state.messages,
