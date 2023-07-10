@@ -110,7 +110,8 @@ export default function Conversation() {
             onClick={() => {
               addMessage({
                 role: 'user',
-                content: 'summarize the above conversation and show me the bullet points',
+                content:
+                  "summarize the above conversation and show me the bullet points, results are returned in Markdown format.Just tell me the result, don't reply to others",
                 value: 'Human',
               })
             }}

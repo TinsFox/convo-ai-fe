@@ -10,8 +10,6 @@ interface IDialogueProps {
 }
 
 export function Dialogue({ role: user, content }: IDialogueProps) {
-  const [audioUrl, setAudioUrl] = useState('')
-  const audioRef = React.useRef<HTMLAudioElement>(null)
   const itemVariants = {
     open: {
       opacity: 1,
@@ -29,9 +27,9 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('AI返回结果', data.response)
-        setAudioUrl(data.response)
-        audioRef.current?.play()
+        console.log('AI返回结果', data)
+        const audio = new Audio(data)
+        audio.play()
       })
       .catch((error) => console.error(error))
   }
@@ -50,7 +48,6 @@ export function Dialogue({ role: user, content }: IDialogueProps) {
       >
         {content}
       </div>
-      <audio src={audioUrl} style={{ display: 'none' }} ref={audioRef}></audio>
     </motion.div>
   )
 }
