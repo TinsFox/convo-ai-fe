@@ -45,7 +45,6 @@ export const useChatStore = create<ChatStore>()(
       fetchMessage: async () => {
         const contextArray = get().messages
         let result = ''
-
         contextArray.forEach((item) => {
           if (item.role === 'Convo AI') {
             result += `Assistant: ${item.content}\\n`
@@ -88,8 +87,8 @@ export const useChatStore = create<ChatStore>()(
 
 export default function Conversation() {
   const messages = useChatStore((state) => state.messages)
-  const fetching = useChatStore((state) => state.fetching)
   const fetchMessage = useChatStore((state) => state.fetchMessage)
+  const addMessage = useChatStore((state) => state.addMessage)
   return (
     <div className="relative flex flex-col min-h-screen overscroll-none">
       <Header></Header>
@@ -105,14 +104,20 @@ export default function Conversation() {
           <Button variant="outline" onClick={fetchMessage}>
             Regenerate response
           </Button>
-          <Button variant="outline" className="mt-4 md:mt-0">
-            I’m ready! Turn on Convo Assist
+          <Button
+            variant="outline"
+            className="mt-4 md:mt-0"
+            onClick={() => {
+              addMessage({
+                role: 'user',
+                content: 'summarize the above conversation and show me the bullet points',
+                value: 'Human',
+              })
+            }}
+          >
+            Summary
           </Button>
         </div>
-        {/* {fetching && (
-          // 判断数字是否奇数
-
-        )} */}
       </div>
       <ChatAction></ChatAction>
     </div>
